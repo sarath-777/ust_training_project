@@ -20,13 +20,16 @@ from api.views import (CreateUserView,  EventView, EventoperView,UserOperations,
     ResidenceGroupListCreateView,
     ResidenceGroupDetailView,
     MembershipListCreateView,
-    MembershipDetailView)
+    MembershipDetailView,
+    CreateAdminView)
 from rest_framework_simplejwt.views import  TokenRefreshView
 
 
     
 urlpatterns = [
     path('admin/', admin.site.urls),
+    #to register admin
+    path('api/admin/register/',CreateAdminView.as_view(),name="admin_registration"),
     path('api/user/register/',CreateUserView.as_view(), name="register"),
     path('api/token/',CustomTokenObtainPairView.as_view(),name='get_token'),
     path('api/token/refresh/',TokenRefreshView.as_view(),name='refresh'),
@@ -34,6 +37,7 @@ urlpatterns = [
     path('api/events/makechanges/<int:pk>/',EventoperView.as_view(),name='event_changes'),
     path('api/admin/useroperations/<int:pk>/',UserOperations.as_view(),name='user_updation'),
     path('api/admin/useroperations/',UserOperations.as_view(),name='getAllUsers'),
+    
 
     #paths to residence group and memebership crud operations:
     path('residence-groups/', ResidenceGroupListCreateView.as_view(), name='residence-group-list-create'),
