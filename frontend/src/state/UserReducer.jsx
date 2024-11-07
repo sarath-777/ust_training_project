@@ -1,17 +1,23 @@
 const initialState = {
-    username : 'fh123',
-    isAdmin : true,
-    phoneNumber : '9876543210',
-    firstName : 'Fawaz',
-    lastName : 'Hussain',
-    residenceCode : '1000AAAA',
+    user : {},
 }
 
-const UserReducer = (state = initialState, action) => {
-    switch(action.type){
-        default:
-            return state
-    }
-}
+const userReducer = (state = initialState, action) => {
+  console.log("Inside Reducer",action.type)  
+  switch(action.type){
+        case 'SET_USER':
+            return {
+              ...state,
+              user: action.payload,
+            };
+          case 'CLEAR_USER':
+            return {
+              ...state,
+              user: null,
+            };
+          default:
+            return state;
+        }
+      }
 
-export default UserReducer
+export default userReducer

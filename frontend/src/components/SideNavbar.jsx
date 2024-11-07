@@ -1,14 +1,27 @@
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react"
-import { useContext, createContext, useState } from "react"
+import { useContext, createContext, useState,useEffect } from "react"
 import { useLocation } from 'react-router-dom'
 import Logo from "../assets/complete_logo.png"
+import { useSelector,useDispatch } from "react-redux"
+import { USER_DATA } from "../constants"
+import { setUser } from "../state/UserActions"
 
 const SidebarContext = createContext()
 
 export default function Sidebar({ children }) {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
   const location = useLocation()
-  
+  const dispatch = useDispatch() 
+  const userdata = useSelector((state) => state.user_data.user)
+  const storedUser = localStorage.getItem(USER_DATA)
+
+  useEffect(()=>{
+    console.log("Inside useEffect",storedUser)
+    if (storedUser) {
+        dispatch(setUser(JSON.parse(storedUser)))
+    }
+  },[])
+
   return (
     <aside className="h-screen">
       <nav className={`h-full flex flex-col bg-white border-r shadow-sm ${expanded ? "w-auto" : "w-16"}`}>
@@ -45,8 +58,8 @@ export default function Sidebar({ children }) {
           `}
           >
             <div className="leading-4">
-              <h4 className="font-semibold">Fawaz Hussain</h4>
-              <span className="text-xs text-gray-600">fh@gmail.com</span>
+              <h4 className="font-semibold">{userdata?.user?.first_name} {userdata?.user?.last_name}</h4>
+              <span className="text-xs text-gray-600">{userdata?.Residence}</span>
             </div>
             <MoreVertical size={20} />
           </div>

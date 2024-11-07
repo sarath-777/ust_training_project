@@ -1,4 +1,5 @@
 from django.contrib import admin
+from .models import ResidenceGroup, Profile
 
 from api.models import Profile, ResidenceGroup
 
