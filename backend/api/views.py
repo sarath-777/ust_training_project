@@ -13,12 +13,13 @@ from rest_framework import status
 
 from .serializers import (UserSerializer, ProfileSerializer,AlertSerializer,
 CustomTokenObtainPairSerializer,
-AdminProfileSerializer
+AdminProfileSerializer,
+ResidenceSerializer
 
 
 )
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Profile, AlertEvent
+from .models import Profile, AlertEvent, Residence
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -29,6 +30,8 @@ class CreateAdminView(generics.CreateAPIView):
     queryset=User.objects.all()
     serializer_class=AdminProfileSerializer
     permission_classes=[AllowAny]
+
+    
     
 
 
@@ -40,7 +43,7 @@ class UserOperations(APIView):
             userobj=Profile.objects.all()
             serializer=ProfileSerializer(userobj,many=True)
             return Response(serializer.data)
-        userobj=Profile.objects.get(pk=pk)
+        userobj=Profile.objects.get(user_id=pk)
         serializer=ProfileSerializer(userobj,many=False)
         return Response(serializer.data)
     def delete(self,request,pk):
@@ -57,6 +60,27 @@ class UserOperations(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # to get and create new events or alerts
+class ResidenceGetDetailView(APIView):
+    permission_classes=[AllowAny]
+    def get(self,request):
+        resobj=Residence.objects.all()
+        serializer = ResidenceSerializer(resobj,many=True)
+        return Response(serializer.data)
+class ResidenceOperationsView(APIView):
+    def patch(self,request,pk):
+        resobj=Residence.objects.get(id=pk)
+        serializer=ResidenceSerializer(resobj,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self,request,pk):
+        resobj=Residence.objects.get(id=pk)
+        resobj.delete()
+        resobj=Residence.objects.all()
+        serializer=ResidenceSerializer(resobj,many=True)
+        return Response(serializer.data)
+
 class EventView(APIView):
     permission_classes=[IsAuthenticated]
 
@@ -124,4 +148,7 @@ class MembershipDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Membership.objects.all()
     serializer_class = MembershipSerializer
     permission_classes = [IsAuthenticated]
+
+
+
 
