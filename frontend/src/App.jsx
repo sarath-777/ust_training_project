@@ -1,7 +1,8 @@
 import react from 'react'
 import { BrowserRouter,Routes,Route,Navigate } from 'react-router-dom'
 import Login from './pages/Login'
-import Register from './pages/Register'
+import UserRegister from './pages/UserRegister'
+import AdminRegister from './pages/AdminRegister'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import Dashboard from './components/Dashboard'
@@ -19,9 +20,14 @@ function Logout() {
   return <Navigate to="/login" />
 }
 
-function RegisterAndLogout() {
+function UserRegisterAndLogout() {
   localStorage.clear()
-  return <Register />
+  return <UserRegister />
+}
+
+function AdminRegisterAndLogout() {
+  localStorage.clear()
+  return <AdminRegister />
 }
 
 function App() {
@@ -31,7 +37,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<RegisterAndLogout />} />
+        <Route path="/user/register" element={<UserRegisterAndLogout />} />
+        <Route path="/admin/register" element={<AdminRegisterAndLogout />} />
         
         <Route path="/" element={<Home />}>
           <Route

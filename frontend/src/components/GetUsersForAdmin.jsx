@@ -10,7 +10,7 @@ import { USER_DATA } from '../constants'
 const GetUsersForAdmin = () => {
     const adminData = useSelector((state) => state.user_data.user)
     const [loading,setLoading] = useState(false)
-    const [residenceUsers,setResidenceUsers] = useState("")
+    const [residenceUsers,setResidenceUsers] = useState([])
     const dispatch = useDispatch()
     const storedUser = localStorage.getItem(USER_DATA)
 
@@ -33,6 +33,15 @@ const GetUsersForAdmin = () => {
             try {
                 const response = await api.get('/api/admin/useroperations/')
                 setResidenceUsers(response.data)
+                console.log(response.data,"response.data")
+
+                const pincode = adminData.Pincode
+                console.log(adminData.Pincode,"pincode")
+
+                // const response = await api.get(`/api/admin/useroperations/`)
+                // setResidenceUsers(response.data)
+                // console.log(response.data)
+
             } catch (error) {
                 console.error('Error fetching data:', error)
             } finally {
@@ -57,7 +66,11 @@ const GetUsersForAdmin = () => {
           <div className="flex justify-between items-center py-2 px-4 border-b border-gray-200">
             {/* Render the list of users */}
             <ul className="w-full">
-              {residenceUsers.length > 0 ? (
+              {residenceUsers.filter((user) => 
+                user.Residence === adminData.Residence && 
+                user.user.id !== adminData.user.id && 
+                !user.isVerified
+                ).length > 0 ? (
                 residenceUsers.map((user) => {
                   if (
                     user.Residence === adminData.Residence &&

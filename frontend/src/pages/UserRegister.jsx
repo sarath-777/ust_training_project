@@ -2,13 +2,13 @@ import React from 'react'
 import RegisterForm from '../components/RegisterForm'
 import Nav from '../components/Nav'
 
-const Register = () => {
+const UserRegister = () => {
   return (
     <div>
       <Nav />
-      <RegisterForm route="/api/user/register/" method="register" />
+      <RegisterForm route="/api/user/register/" method="register" checkAdmin="false"/>
     </div>
   )
 }
 
-export default Register
+export default UserRegister

@@ -1,26 +1,45 @@
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import api from "../api"
 import { useNavigate } from "react-router-dom"
 import { ACCESS_TOKEN,REFRESH_TOKEN } from "../constants"
 import "../styles/Form.css"
 import LoadingIndicator from "./LoadingIndicator"
 
-function RegisterForm({route,method}){
+function RegisterForm({route,method,checkAdmin}){
     const [username,setUsername] = useState("")
     const [password,setPassword] = useState("")
     const [firstName,setFirstName] = useState("")
     const [lastName,setLastName] = useState("")
     const [email,setEmail] = useState("")
-    // const [phoneNumber,setPhoneNumber] = useState("")
+    const [phoneNumber,setPhoneNumber] = useState("")
     const [isAdmin,setIsAdmin] = useState(false)
+    const [isVerified,setIsVerified] = useState(false)
     const [residenceCode,setResidenceCode] = useState("")
+    const [residenceName,setResidenceName] = useState("")
+    const [pincode,setPincode] = useState("")
     const [bio,setBio] = useState("")
     const [loading,setLoading] = useState(false)
     const navigate = useNavigate()
+    console.log(isAdmin,"outside useEffect")
+    useEffect(() => {
+        console.log(isAdmin,"inside useEffect")
+        if (checkAdmin === "true") {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      }, []);
 
-
-    const handleChange = (event) => {
+    const handleResidenceCode = (event) => {
         setResidenceCode(event.target.value);
+      };
+
+    const handlePincode = (event) => {
+        setPincode(event.target.value);
+      };
+
+    const handleResidenceName = (event) => {
+        setResidenceName(event.target.value);
       };
 
     const handleSubmit = async (e) => {
@@ -28,18 +47,41 @@ function RegisterForm({route,method}){
         e.preventDefault()
 
         try {
-            const res = await api.post(route, {
-                "user": {
-                    "username" : username,
-                    "password" : password,
-                    "first_name" : firstName,
-                    "last_name" : lastName,
-                    "email" : email
-                },
-                "isAdmin" : isAdmin,
-                "Residence" : residenceCode,
-                "bio" : bio
-            })
+            if (checkAdmin === "false") {
+                const res = await api.post(route, {
+                    "user": {
+                        "username" : username,
+                        "password" : password,
+                        "first_name" : firstName,
+                        "last_name" : lastName,
+                        "email" : email,
+                        "phonenumber" : phoneNumber
+                    },
+                    "isAdmin" : isAdmin,
+                    "Pincode" : residenceCode,
+                    "bio" : bio,
+                    "isVerified" : isVerified
+                })
+            }
+
+            if (checkAdmin === "true") {
+                const res = await api.post(route, {
+                    "user": {
+                        "username" : username,
+                        "password" : password,
+                        "first_name" : firstName,
+                        "last_name" : lastName,
+                        "email" : email,
+                        "phonenumber" : phoneNumber
+                    },
+                    "isAdmin" : isAdmin,
+                    "Adminresidence" : residenceName,
+                    "Adminpincode" : pincode,
+                    "bio" : bio,
+                    "isVerified" : true
+                })
+            }
+            
 
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access)
@@ -57,7 +99,7 @@ function RegisterForm({route,method}){
 
     return (
         <form onSubmit={handleSubmit} className="form-container">
-            <h1>Register</h1>
+            <h1>{ isAdmin ? "Admin" : "User" } Registration</h1>
             {/* Username */}
             <input
             className="form-input"
@@ -91,13 +133,13 @@ function RegisterForm({route,method}){
             placeholder="Last Name"
             />
             {/* Phone number */}
-            {/* <input
+            <input
             className="form-input"
             type="text"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Phone number"
-            /> */}
+            />
             {/* Email */}
             <input
             className="form-input"
@@ -107,7 +149,7 @@ function RegisterForm({route,method}){
             placeholder="Email"
             />
             {/* Is Admin ? */}
-            <div>
+            {/* <div>
                 <label htmlFor="#">Are you admin?</label>
                 <input
                 className="form-input"
@@ -116,26 +158,36 @@ function RegisterForm({route,method}){
                 onChange={(e) => setIsAdmin(e.target.checked)}
                 placeholder="Are you admin?"
                 />
-            </div>
+            </div> */}
             {/* Residence Code */}
             <div>
-                <label htmlFor="dropdown">
-                    {isAdmin ? "New Residence Name:" : "Residence Code:"}
-                </label>
+                {/* <label htmlFor="dropdown">
+                    {isAdmin==="true" ? "New Residence Name:" : "Residence Code:"}
+                </label> */}
                 {isAdmin ? (
-                    <input
-                        id="residenceCode"
-                        className="form-input"
-                        type="text"
-                        value={residenceCode}
-                        onChange={handleChange}
-                        placeholder="Enter new Residence name"
-                    />
+                    <>
+                        <input
+                            id="residenceName"
+                            className="form-input"
+                            type="text"
+                            value={residenceName}
+                            onChange={handleResidenceName}
+                            placeholder="Enter new Residence name"
+                        />
+                        <input
+                            id="pincode"
+                            className="form-input"
+                            type="text"
+                            value={pincode}
+                            onChange={handlePincode}
+                            placeholder="Enter Pincode"
+                        />
+                    </>
                 ) : (
                     <select
                         id="residenceCode"
                         value={residenceCode}
-                        onChange={handleChange}
+                        onChange={handleResidenceCode}
                     >
                         <option value="">Select an option</option>
                         <option value="option1">Option 1</option>

@@ -30,6 +30,7 @@ function LoginForm({route,method}){
                 localStorage.setItem(REFRESH_TOKEN, res.data[0].refresh)
 
                 const userId = res.data[1].user_id
+                console.log(userId)
                 const userData = await api.get(`/api/admin/useroperations/${userId}/`)
                 console.log(userData.data)
                 // dispatch(setUser(userData.data))
