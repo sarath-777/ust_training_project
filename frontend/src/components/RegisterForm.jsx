@@ -8,11 +8,16 @@ import LoadingIndicator from "./LoadingIndicator"
 function RegisterForm({route,method}){
     const [username,setUsername] = useState("")
     const [password,setPassword] = useState("")
-    const [phoneNumber,setPhoneNumber] = useState("")
+    const [firstName,setFirstName] = useState("")
+    const [lastName,setLastName] = useState("")
+    const [email,setEmail] = useState("")
+    // const [phoneNumber,setPhoneNumber] = useState("")
     const [isAdmin,setIsAdmin] = useState(false)
     const [residenceCode,setResidenceCode] = useState("")
+    const [bio,setBio] = useState("")
     const [loading,setLoading] = useState(false)
     const navigate = useNavigate()
+
 
     const handleChange = (event) => {
         setResidenceCode(event.target.value);
@@ -23,7 +28,19 @@ function RegisterForm({route,method}){
         e.preventDefault()
 
         try {
-            const res = await api.post(route, {username,password,phoneNumber,isAdmin,residenceCode})
+            const res = await api.post(route, {
+                "user": {
+                    "username" : username,
+                    "password" : password,
+                    "first_name" : firstName,
+                    "last_name" : lastName,
+                    "email" : email
+                },
+                "isAdmin" : isAdmin,
+                "Residence" : residenceCode,
+                "bio" : bio
+            })
+
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access)
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
@@ -57,13 +74,37 @@ function RegisterForm({route,method}){
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             />
-            {/* Phone number */}
+            {/* First Name */}
             <input
+            className="form-input"
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="First Name"
+            />
+            {/* Last Name */}
+            <input
+            className="form-input"
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Last Name"
+            />
+            {/* Phone number */}
+            {/* <input
             className="form-input"
             type="text"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Phone number"
+            /> */}
+            {/* Email */}
+            <input
+            className="form-input"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
             />
             {/* Is Admin ? */}
             <div>
@@ -71,8 +112,8 @@ function RegisterForm({route,method}){
                 <input
                 className="form-input"
                 type="checkbox"
-                value={isAdmin}
-                onChange={(e) => setIsAdmin(e.target.value)}
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
                 placeholder="Are you admin?"
                 />
             </div>
@@ -103,6 +144,15 @@ function RegisterForm({route,method}){
                     </select>
                 )}
             </div>
+
+            {/* Bio */}
+            <input
+            className="form-input"
+            type="text"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="Your Bio"
+            />
 
             {loading && <LoadingIndicator />}
             <button className="form-button" type="submit">
