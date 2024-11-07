@@ -30,6 +30,8 @@ class CreateAdminView(generics.CreateAPIView):
     queryset=User.objects.all()
     serializer_class=AdminProfileSerializer
     permission_classes=[AllowAny]
+
+    
     
 
 

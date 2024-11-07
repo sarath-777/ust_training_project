@@ -23,8 +23,7 @@ from api.views import (CreateUserView,  EventView, EventoperView,UserOperations,
     MembershipDetailView,
     CreateAdminView,
     ResidenceGetDetailView,
-    ResidenceOperationsView 
-     )
+    ResidenceOperationsView)
 from rest_framework_simplejwt.views import  TokenRefreshView
 
 

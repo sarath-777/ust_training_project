@@ -36,7 +36,7 @@ class AdminProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= Profile
-        fields=['user','phonenumber','isAdmin','Adminresidence','Adminpincode','bio']
+        fields=['user','phonenumber','isAdmin','Pincode_id','Adminresidence','Adminpincode','bio']
     def create(self,validated_data):
         user_data= validated_data.pop('user') #extract the user data from the validated data
         user_serializer=UserSerializer(data=user_data) #initialise user serializer
