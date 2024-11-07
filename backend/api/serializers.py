@@ -150,14 +150,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         try:
             profile = Profile.objects.get(user=user)
             if profile.isAdmin:
-                return data
+                return data,{"user_id": profile.user_id}
             if not profile.isVerified:
                 raise serializers.ValidationError("Your account is not verified by the admin.")
         except Profile.DoesNotExist:
             raise serializers.ValidationError("Profile does not exist.")
 
         # If everything is fine, return the token data
-        return data
+        return data,{"user_id": profile.user_id}
 
 
 #Serializers for Residence Groups and Memberships
