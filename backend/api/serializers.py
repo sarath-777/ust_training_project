@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ResidenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Residence
-        fields=['ResidenceName','Pincode']
+        fields=['id','ResidenceName','Pincode']
 
 class AdminProfileSerializer(serializers.ModelSerializer):
     user=UserSerializer(required=False)
@@ -67,7 +67,7 @@ class AdminProfileSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(required=False)  # Make the user field optional for updates
     Pincode = serializers.PrimaryKeyRelatedField(queryset=Residence.objects.all())  # Link to Residence using ForeignKey
-    
+    # pincode=serializers.CharField(validators=[pin_regex],max_length=6)
 
     class Meta:
         model = Profile
@@ -94,12 +94,39 @@ class ProfileSerializer(serializers.ModelSerializer):
         profile = Profile.objects.create(user=user, Pincode=residence, **validated_data)
 
         return profile
+            # residence_data=validated_data.pop('residence')
+            # residence = Residence(
+            #     ResidenceName=residence_data.get('ResidenceName',None),
+            #     Pincode = residence_data.get('Pincode',None)
+            # )
             
+            # residence.save()
+
+             # Extract residence data
+        # residence_data = validated_data.pop('residence', None)
+        # if not residence_data:
+        #     raise serializers.ValidationError({"residence": "Residence data is required."})
+
+        # residence_name = residence_data.get('ResidenceName')
+        # pincode = residence_data.get('Pincode')
+
+        # # Try to get the existing Residence object or create a new one
+        # residence, created = Residence.objects.get_or_create(
+        #     ResidenceName=residence_name,
+        #     Pincode=pincode
+        # )
+
+        # # Create the Profile object
+        # profile = Profile.objects.create(
+        #     user=user,
+        #     residence=residence_name,
+        #     Pincode=residence,  # Use the ForeignKey to Residence
+        #     **validated_data
+        # )
 
 
-      
 
-
+        # return profile
       
 
 

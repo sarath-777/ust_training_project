@@ -21,7 +21,9 @@ from api.views import (CreateUserView,  EventView, EventoperView,UserOperations,
     ResidenceGroupDetailView,
     MembershipListCreateView,
     MembershipDetailView,
-    CreateAdminView)
+    CreateAdminView,
+    ResidenceGetDetailView,
+    ResidenceOperationsView)
 from rest_framework_simplejwt.views import  TokenRefreshView
 
 
@@ -44,6 +46,10 @@ urlpatterns = [
     path('residence-groups/<int:pk>/', ResidenceGroupDetailView.as_view(), name='residence-group-detail'),
     path('memberships/', MembershipListCreateView.as_view(), name='membership-list-create'),
     path('memberships/<int:pk>/', MembershipDetailView.as_view(), name='membership-detail'),
+
+    #to perform retreive, update and delete operations on residence table:
+    path('api/admin/residenceOperations/',ResidenceGetDetailView.as_view(),name='residenceTable_getDetails'),
+    path('api/admin/residenceOperations/<int:pk>/',ResidenceOperationsView.as_view(),name='residenceTable_Operations_patch_delete'),
     
 
 ]
