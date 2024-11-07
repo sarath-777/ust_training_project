@@ -82,7 +82,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['user','phonenumber', 'isAdmin','Pincode','bio','isVerified']
+        fields = ['user','phonenumber', 'isAdmin','Pincode','Adminresidence','Adminpincode','bio','isVerified']
 
     def create(self,validated_data):
         user_data= validated_data.pop('user') #extract the user data from the validated data
