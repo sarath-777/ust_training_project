@@ -6,6 +6,10 @@ from rest_framework import serializers
 from .models import Profile, AlertEvent,Residence
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.validators import RegexValidator
+from rest_framework import status
+from django.http import JsonResponse
+
+
 
 pin_regex = RegexValidator(
     regex=r'^\d{6}$',
@@ -36,14 +40,11 @@ class AdminProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= Profile
-        fields=['user','phonenumber','isAdmin','Pincode_id','Adminresidence','Adminpincode','bio']
+        fields=['user','phonenumber','isAdmin','Pincode_id','Adminresidence','Adminpincode','bio','isVerified']
     def create(self,validated_data):
         user_data= validated_data.pop('user') #extract the user data from the validated data
         user_serializer=UserSerializer(data=user_data) #initialise user serializer
-        if user_serializer.is_valid():
-            user = user_serializer.save()
-        else:
-            raise serializers.ValidationError(user_serializer.errors)
+        
         
 
 
@@ -54,8 +55,18 @@ class AdminProfileSerializer(serializers.ModelSerializer):
                 ResidenceName=adminresidence_data,
                 Pincode=adminpincode_data
             )
+            if not created:
+                raise serializers.ValidationError(
+        {"residence": "Residence with the specified name and pincode already exists."}
+        
+    )
+
         else:
             raise serializers.ValidationError({"Pincode": "Pincode and Residence data is required."})
+        if user_serializer.is_valid():
+            user = user_serializer.save()
+        else:
+            raise serializers.ValidationError(user_serializer.errors)
         profile = Profile.objects.create(user=user,Adminresidence=adminresidence_data,
         Adminpincode=adminpincode_data, **validated_data
         
