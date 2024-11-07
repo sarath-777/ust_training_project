@@ -11,7 +11,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import UserSerializer, ProfileSerializer,AlertSerializer,CustomTokenObtainPairSerializer
+from .serializers import (UserSerializer, ProfileSerializer,AlertSerializer,
+CustomTokenObtainPairSerializer,
+AdminProfileSerializer
+
+
+)
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Profile, AlertEvent
 
@@ -19,6 +24,12 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [AllowAny]
+
+class CreateAdminView(generics.CreateAPIView):
+    queryset=User.objects.all()
+    serializer_class=AdminProfileSerializer
+    permission_classes=[AllowAny]
+    
 
 
 

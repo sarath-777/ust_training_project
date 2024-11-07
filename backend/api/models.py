@@ -1,20 +1,52 @@
-from xml.etree.ElementInclude import default_loader
+
+
+
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
+
+
+
+phone_regex = RegexValidator(
+    regex=r'^\d{10}$',
+    message="Phone number must be exactly 10 digits.",
+    code="Invalid_Phone_Number"
+)
+pin_regex = RegexValidator(
+    regex=r'^\d{6}$',
+    message= "Pin code must be exactly 6 digits",
+    code = "Invalid_Pin_Code"
+)
+
 
 # Create your models here.
+class Residence(models.Model):
+    ResidenceName= models.CharField(max_length=50)
+    Pincode= models.CharField(validators=[pin_regex],max_length=6,blank=True,null=True)
+
+    class Meta:
+        unique_together = ('ResidenceName','Pincode')
+
+    def __str__(self):
+        return f"{self.ResidenceName} - {self.Pincode}"
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phonenumber=models.CharField(validators=[phone_regex],unique=True, blank=True,null=True,max_length=10)
     isAdmin=models.BooleanField(default=False, help_text='Check This Box if you are the admin of any residence')
-   
-    Residence = models.CharField(max_length=100)
-
     
+    Adminresidence = models.CharField(max_length=50,blank=True,null=True)
+    Adminpincode = models.CharField(validators=[pin_regex],max_length=6,blank=True,null=True)
+    
+    Pincode=models.ForeignKey(Residence, on_delete=models.SET_NULL, null=True)
     bio = models.TextField(blank=True, null=True)
     isVerified = models.BooleanField(default=False, help_text='This field is checked by the admin and only when the admin checks this field a user can login to the portal')
 
     def __str__(self):
         return self.user.username
+
+
 
 
 
