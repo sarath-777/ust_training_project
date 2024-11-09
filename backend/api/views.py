@@ -84,7 +84,11 @@ class ResidenceOperationsView(APIView):
 class EventView(APIView):
     permission_classes=[IsAuthenticated]
 
-    def get(self,request):
+    def get(self,request,pk=None):
+        if pk:
+            events=AlertEvent.objects.all(id=pk)
+            serializer=AlertSerializer(events, partial=True)
+            return Response(serializer.data)
         events=AlertEvent.objects.all()
         serializer=AlertSerializer(events,many=True)
         return Response(serializer.data)
