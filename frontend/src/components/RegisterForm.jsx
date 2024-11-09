@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react"
 import api from "../api"
 import { useNavigate } from "react-router-dom"
-import { ACCESS_TOKEN,REFRESH_TOKEN } from "../constants"
+import { ACCESS_TOKEN,REFRESH_TOKEN, USER_DATA } from "../constants"
 import "../styles/Form.css"
 import LoadingIndicator from "./LoadingIndicator"
 
@@ -16,19 +16,34 @@ function RegisterForm({route,method,checkAdmin}){
     const [isVerified,setIsVerified] = useState(false)
     const [residenceCode,setResidenceCode] = useState("")
     const [residenceName,setResidenceName] = useState("")
-    const [pincode,setPincode] = useState("")
+    const [pincode,setPincode] = useState(null)
+    const [pincodeList,setPincodeList] = useState([])
     const [bio,setBio] = useState("")
+    const [error, setError] = useState('');
     const [loading,setLoading] = useState(false)
     const navigate = useNavigate()
-    console.log(isAdmin,"outside useEffect")
+    
     useEffect(() => {
-        console.log(isAdmin,"inside useEffect")
         if (checkAdmin === "true") {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
         }
+        fetchPincode()
       }, []);
+
+    // Function to check if the residence exists
+    const checkResidenceExists = async () => {
+        try {
+        const response = await api.get('/api/admin/residenceOperations/', {
+            params: { name: residenceName, pincode: pincode }
+        });
+        return response.data.exists;
+        } catch (error) {
+        console.error('Error checking residence:', error);
+        return false;
+        }
+    };
 
     const handleResidenceCode = (event) => {
         setResidenceCode(event.target.value);
@@ -42,9 +57,29 @@ function RegisterForm({route,method,checkAdmin}){
         setResidenceName(event.target.value);
       };
 
+    const fetchPincode = async () => {
+        setLoading(true)
+        try {
+            const pincodeResponse = await api.get("/api/admin/residenceOperations/");
+            setPincodeList(pincodeResponse.data)
+          } catch (error) {
+            console.error("Error fetching residence data:", error);
+          } finally {
+            setLoading(false);
+          }
+    }
+
     const handleSubmit = async (e) => {
         setLoading(true)
         e.preventDefault()
+
+        const residenceExists = await checkResidenceExists();
+
+        if (residenceExists) {
+        setError('This residence group already exists with the same Name and Pincode.');
+        setLoading(false);
+        return;
+        }
 
         try {
             if (checkAdmin === "false") {
@@ -55,12 +90,12 @@ function RegisterForm({route,method,checkAdmin}){
                         "first_name" : firstName,
                         "last_name" : lastName,
                         "email" : email,
-                        "phonenumber" : phoneNumber
                     },
+                    "phonenumber" : phoneNumber,
                     "isAdmin" : isAdmin,
                     "Pincode" : residenceCode,
                     "bio" : bio,
-                    "isVerified" : isVerified
+                    "isVerified" : isVerified,
                 })
             }
 
@@ -72,13 +107,13 @@ function RegisterForm({route,method,checkAdmin}){
                         "first_name" : firstName,
                         "last_name" : lastName,
                         "email" : email,
-                        "phonenumber" : phoneNumber
                     },
+                    "phonenumber" : phoneNumber,
                     "isAdmin" : isAdmin,
                     "Adminresidence" : residenceName,
                     "Adminpincode" : pincode,
                     "bio" : bio,
-                    "isVerified" : true
+                    "isVerified" : true,
                 })
             }
             
@@ -86,6 +121,7 @@ function RegisterForm({route,method,checkAdmin}){
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access)
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
+                // localStorage.setItem(USER_DATA,res.data)
                 navigate("/")
             } else {
                 navigate("/login")
@@ -190,9 +226,18 @@ function RegisterForm({route,method,checkAdmin}){
                         onChange={handleResidenceCode}
                     >
                         <option value="">Select an option</option>
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
+                        {pincodeList?.length > 0 ? (
+                            pincodeList.map((residence) => (
+                            <option 
+                                key={residence.id}
+                                value={residence.id}
+                            >
+                                {residence.ResidenceName} ({residence.Pincode})
+                            </option>
+                            ))
+                        ) : (
+                            <option disabled>No residence data available</option>
+                        )}
                     </select>
                 )}
             </div>
