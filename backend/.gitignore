@@ -1,0 +1,38 @@
+# Python-related
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+.env
+
+# Django-related
+db.sqlite3
+*.log
+
+# Migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# Media files
+/media/
+
+# Static files
+/static/
+
+# VSCode settings
+.vscode/
+
+# IDEs and Editors
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Virtual environment
+venv/
+.env/
+venv.bak/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
