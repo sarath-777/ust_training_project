@@ -36,7 +36,7 @@ useEffect(()=>{
       </div>
       {/* Main Content Area */}
       <div className="flex-1 p-4 m-4 bg-white border border-gray-200 shadow-lg rounded-lg">
-          <main className="w-full h-full p-6 bg-white rounded-lg">
+          <main className="w-full h-full p-6 bg-white rounded-lg overflow-y-auto custom-scrollbar">
             <Outlet />
           </main>
       </div>

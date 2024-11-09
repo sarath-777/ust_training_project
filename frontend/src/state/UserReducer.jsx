@@ -3,7 +3,6 @@ const initialState = {
 }
 
 const userReducer = (state = initialState, action) => {
-  console.log("Inside Reducer",action.type)  
   switch(action.type){
         case 'SET_USER':
             return {
