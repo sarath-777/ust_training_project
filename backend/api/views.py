@@ -47,13 +47,13 @@ class UserOperations(APIView):
         serializer=ProfileSerializer(userobj,many=False)
         return Response(serializer.data)
     def delete(self,request,pk):
-        userobj=Profile.objects.get(pk=pk)
+        userobj=Profile.objects.get(user_id=pk)
         userobj.delete()
         users=Profile.objects.all()
         serializer=ProfileSerializer(users,many=True)
         return Response(serializer.data)
     def patch(self,request,pk):
-        userobj=Profile.objects.get(pk=pk)
+        userobj=Profile.objects.get(user_id=pk)
         serializer=ProfileSerializer(userobj, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
