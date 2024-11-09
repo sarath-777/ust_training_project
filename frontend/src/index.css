@@ -33,4 +33,45 @@
   .custom-scrollbar {
     scroll-behavior: smooth; /* Smooth scrolling */
   }
+
+
+  .edit-button {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-button:hover {
+    background-color: #45a049;
+  }
+  
+  .edit-button:active {
+    background-color: #388e3c;
+  }
+  
+  /* Delete Button Style */
+  .delete-button {
+    background-color: #f44336; /* Red background */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .delete-button:hover {
+    background-color: #e53935;
+  }
+  
+  .delete-button:active {
+    background-color: #d32f2f;
+  }
   

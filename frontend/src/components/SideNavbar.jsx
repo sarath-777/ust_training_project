@@ -22,6 +22,8 @@ export default function Sidebar({ children }) {
     }
   },[])
 
+  console.log(userdata,"ooooooooo")
+
   return (
     <aside className="h-screen">
       <nav className={`h-full flex flex-col bg-white border-r shadow-sm ${expanded ? "w-auto" : "w-16"}`}>
@@ -47,7 +49,7 @@ export default function Sidebar({ children }) {
 
         <div className="border-t flex p-3">
           <img
-            src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
+            src={`https://ui-avatars.com/api/?name=${userdata?.user?.first_name}+${userdata?.user?.last_name}background=c7d2fe&color=3730a3&bold=true`}
             alt=""
             className="w-10 h-10 rounded-md"
           />

@@ -41,13 +41,12 @@ const GetUsersForAdmin = () => {
     
     try {
       const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "to verify this User",
+        title: "Verify this user?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Verify it!"
+        confirmButtonText: "Verify"
       });
   
       if (result.isConfirmed) {
@@ -88,7 +87,6 @@ const GetUsersForAdmin = () => {
     try {
       const result = await Swal.fire({
         title: "Make this user ADMIN?",
-        text: "Click Make Admin to continue",
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -130,8 +128,7 @@ const GetUsersForAdmin = () => {
   const handleRemoveAdmin = async (userId) => {
     try {
       const result = await Swal.fire({
-        title: "Remove from Admin?",
-        text: "Click Remove to continue",
+        title: "Remove this user from Admin?",
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -172,11 +169,9 @@ const GetUsersForAdmin = () => {
 
 
   const handleUnverifyUser = async (userId) => {
-    setLoading(true);
     try {
       const result = await Swal.fire({
-        title: "Revoke Verification?",
-        text: "Click Revoke to un-verify the user",
+        title: "Revoke Verification of this user?",
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -219,8 +214,7 @@ const GetUsersForAdmin = () => {
   const handleDeleteUser = async (userId) => {
     try {
       const result = await Swal.fire({
-        title: "Delete the User?",
-        text: "Click Delete to continue",
+        title: "Delete this User?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",

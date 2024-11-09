@@ -4,6 +4,7 @@ import { useState,useEffect,useRef } from 'react';
 import { USER_DATA } from '../constants';
 import { setUser } from '../state/UserActions';
 import api from '../api';
+import Swal from 'sweetalert2';
 
 const Dashboard = () => {
     // const adminData = useSelector((state) => state.user_data.user)
@@ -132,6 +133,7 @@ const Dashboard = () => {
             }
         }
         fetchData()
+        
 
     }, [])
 
@@ -153,14 +155,129 @@ const Dashboard = () => {
       }
     };
 
-    const alerts = events.filter(event => event.Event === false && event.Residence === residenceName);
+    const alerts = events.filter(event => event.Event === false && event.Residence === residenceName && !event.Completed);
 
-    const normalEvents = events.filter(event => event.Event === true && event.Residence === residenceName);
-    console.log('Filtered Alerts:', alerts);
-    console.log('Filtered Regular Events:', normalEvents);
+    const normalEvents = events.filter(event => event.Event === true && event.Residence === residenceName && !event.Completed);
 
     const toggleAlertExpand = (alertId) => {
       setExpandedAlertId(expandedAlertId === alertId ? null : alertId);
+    };
+
+    const handleEditEvent = async (eventId) => {
+      try {
+        const response = await api.get(`api/events/${eventId}/`);
+        const event = response.data;
+        let isCompleted = event.Completed;
+        console.log("edit : ",isCompleted)
+
+        const { value: formValues } = await Swal.fire({
+          title: "Edit Alert/Event",
+          html: `
+            <div>
+              <input type="text" id="event-title" value="${event.Title}" class="swal2-input" placeholder="Title" required>
+            </div>
+            <div>
+              <label><strong>Date</strong></label>
+              <input id="event-date" type="date" class="swal2-input" value="${event.Date}" required>
+            </div>
+            <div>
+              <label><strong>Time</strong></label>
+              <input id="event-time" type="time" class="swal2-input" value="${event.Time}" required>
+            </div>
+            <div>
+              <input id="event-venue" type="text" class="swal2-input" value="${event.Venue}" placeholder="Venue">
+            </div>
+            <div>
+              <input id="event-description" type="text" class="swal2-input" value="${event.Description}" placeholder="Description">
+            </div>
+            <div>
+              <input id="event-completion" type="checkbox" ${isCompleted ? "checked" : ""}>
+              <label>Completed</label>
+            </div>
+          `,
+          focusConfirm: false,
+          preConfirm: () => {
+            // Collect form values
+            const title = document.getElementById("event-title").value;
+            const date = document.getElementById("event-date").value;
+            const time = document.getElementById("event-time").value;
+            const venue = document.getElementById("event-venue").value;
+            const description = document.getElementById("event-description").value;
+            const completed = document.getElementById("event-completion").checked;
+    
+            return { title, date, time, venue, description, completed };
+          }
+        });
+    
+        // Ensure formValues is returned and valid
+        if (formValues) {
+          // Prepare data for the API request
+          const updatedEvent = {
+            Title: formValues.title,
+            Date: formValues.date,
+            Time: formValues.time,
+            Venue: formValues.venue,
+            Description: formValues.description,
+            Completed: formValues.completed
+          };
+    
+          // Update the event via API
+          console.log(updatedEvent.Completed,"jjjjjjjjjjjjjjjjjjjjjjj")
+          const updateResponse = await api.patch(`api/events/makechanges/${eventId}/`, updatedEvent);
+    
+          // Handle success
+          Swal.fire({
+            title: "Event Updated!",
+            text: "The event has been updated successfully.",
+            icon: "success"
+          });
+        }
+      } catch (error) {
+        console.error("Error editing event:", error);
+        Swal.fire({
+          title: "Error",
+          text: "There was an error editing the event.",
+          icon: "error"
+        });
+      }
+    };
+
+    const handleDeleteEvent = async (eventId) => {
+      try {
+        const result = await Swal.fire({
+          title: "Remove this Alert/Event?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Remove"
+        });
+    
+        if (result.isConfirmed) {
+          // Perform the API request to verify the user
+          const updateResponse = await api.delete(`api/events/makechanges/${eventId}/`);
+          
+          console.log('Alert/Event removed', updateResponse.data);
+    
+          // Show a success message
+          Swal.fire({
+            title: "Removed",
+            text: "The alert/event have been successfully deleted",
+            icon: "success"
+          });
+        }
+        
+      } catch (error) {
+        console.error('Error removing the Alert/Event:', error);
+        // Show an error message
+        Swal.fire({
+          title: "Error!",
+          text: "Issue in removing the Alert/Event",
+          icon: "error"
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
 
@@ -193,15 +310,34 @@ const Dashboard = () => {
                     )}
                     {expandedAlertId === alert.id && (
                     <>
-                      <div className="alert-residence text-sm font-medium text-gray-100 mb-2">
-                        <strong>Residence:</strong> {alert.Residence}
-                      </div>
+                      {alert.Venue && (
+                        <div className="alert-residence text-sm font-medium text-gray-100 mb-2">
+                          <strong>Venue:</strong> {alert.Venue}
+                        </div>
+                      )}
                       <div className="alert-datetime text-sm font-medium text-gray-200 mb-2">
                         <strong>Date:</strong> {alert.Date} | <strong>Time:</strong> {alert.Time}
                       </div>
                       <div className="alert-description text-sm text-gray-200">
                         <strong>Description:</strong> {alert.Description}
                       </div>
+                      {adminData.isAdmin === true && (
+                        <div>
+                          <br />
+                          <button
+                            className="edit-button"
+                            onClick={() => handleEditEvent(alert.id)}
+                          >
+                            <strong>Edit</strong>
+                          </button>
+                          <button
+                          className="delete-button"
+                          onClick={() => handleDeleteEvent(alert.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </>
                   )}
                 </li>
@@ -244,6 +380,23 @@ const Dashboard = () => {
                       <div className="event-description text-sm text-gray-800">
                         <strong>Description:</strong> {event.Description}
                       </div>
+                      {adminData.isAdmin === true && (
+                        <div>
+                          <br />
+                          <button
+                            className="edit-button"
+                            onClick={() => handleEditEvent(event.id)}
+                          >
+                            <strong>Edit</strong>
+                          </button>
+                          <button
+                          className="delete-button"
+                          onClick={() => handleDeleteEvent(event.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </>
                   )}
                 </li>

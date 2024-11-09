@@ -10,6 +10,7 @@ import GetUsersForAdmin from './components/GetUsersForAdmin'
 import { useDispatch } from "react-redux"
 import { clearUser } from "../src/state/UserActions"
 import ProtectedRoute from './components/ProtectedRoute'
+import ProfileEdit from './components/ProfileEdit'
 
 
 function Logout() {
@@ -54,6 +55,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <GetUsersForAdmin />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfileEdit />
               </ProtectedRoute>
             }
           />

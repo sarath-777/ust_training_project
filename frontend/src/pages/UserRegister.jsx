@@ -4,11 +4,10 @@ import Nav from '../components/Nav'
 
 const UserRegister = () => {
   return (
-    <div>
-      <Nav />
+    <div className="max-h-screen">
       <RegisterForm route="/api/user/register/" method="register" checkAdmin="false"/>
     </div>
-  )
-}
+  );
+};
 
 export default UserRegister

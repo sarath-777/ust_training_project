@@ -4,6 +4,7 @@ import { useLocation,useNavigate } from 'react-router-dom'
 import { useDispatch,useSelector } from 'react-redux'
 import { clearUser } from '../state/UserActions'
 import Swal from 'sweetalert2'
+import api from '../api'
 import {
     CircleFadingPlus,
   Receipt,
@@ -12,7 +13,7 @@ import {
   UserCircle,
   MessageCircle,
   LayoutDashboard,
-  Settings,
+  Users,
   LogOut,
 } from "lucide-react"
 
@@ -22,16 +23,9 @@ const LeftSideNavbar = () => {
     const location = useLocation()
     const isActive = (path) => location.pathname === path
     const isAdmin = useSelector(state=>state.user_data.user.isAdmin)
+    const residenceName = useSelector(state=>state.user_data.user.Adminresidence)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
-    const handleDashboard = () => {
-      navigate("/dashboard")
-    }
-
-    const handleViewUsers = () => {
-      navigate("/view-users")
-    }
 
     const handleLogout = () => {
       console.log("Logging out")
@@ -40,17 +34,21 @@ const LeftSideNavbar = () => {
       navigate("/login")
     }
 
-    const handleAddEvent = async (userId) => {
+    const handleAddEvent = async () => {
       try {
+        // Open the SweetAlert2 dialog
         const { value: formValues } = await Swal.fire({
           title: "Add Alerts/Events",
           html: `
+            <div>
+              <input type="text" id="event-residence" value="${residenceName}" disabled>
+            </div>
             <input id="event-title" type="text" class="swal2-input" placeholder="Title of Alert/Event" required>
             <br/><br/>
             <!-- Radio input for selecting Alert or Event -->
             <div>
               <label><strong>Type</strong></label><br>
-              <div style="display : flex; justify-content:space-around">
+              <div style="display: flex; justify-content: space-around">
                 <div>
                   <input type="radio" id="alert" name="type" value="false">
                   <label for="alert">Alert</label><br>
@@ -72,10 +70,10 @@ const LeftSideNavbar = () => {
             </div>
             <input id="event-venue" type="text" class="swal2-input" placeholder="Venue">
             <input id="event-description" type="text" class="swal2-input" placeholder="Description">
-            
           `,
           focusConfirm: false,
           preConfirm: () => {
+            // Collect form values from inputs
             const title = document.getElementById("event-title").value;
             const description = document.getElementById("event-description").value;
             const date = document.getElementById("event-date").value;
@@ -85,41 +83,40 @@ const LeftSideNavbar = () => {
             // Get the selected radio option (either "Alert" or "Event")
             const type = document.querySelector('input[name="type"]:checked') ? document.querySelector('input[name="type"]:checked').value : null;
     
-            return { title, description, date, time, venue, type }; // Return all form values
+            // Return the form values
+            return { title, description, date, time, venue, type, residenceName };
           }
         });
-
+    
+        // Ensure formValues is returned and valid before proceeding
         if (formValues) {
-          // Show the selected type (Alert or Event)
-          Swal.fire({
-            title: "Form Submitted",
-            html: `You added a ${formValues.type === "true" ? "Event" : "Alert"} titled: <strong>${formValues.title}</strong><br>Details: ${JSON.stringify(formValues)}`
+          console.log(formValues);
+    
+          // API call to create event/alert
+          const response = await api.post(`/api/events/`, { 
+            Title: formValues.title,
+            Residence: formValues.residenceName,
+            Event: formValues.type,
+            Date: formValues.date,
+            Time: formValues.time,
+            Description: formValues.description,
+            Venue: formValues.venue,
+            Completed: false
           });
     
-        // if (result.isConfirmed) {
-        //   // Perform the API request to verify the user
-        //   const response = await api.patch(`/api/admin/useroperations/${userId}/`, { isVerified: false });
-        //   setResidenceUsers((prevUsers) =>
-        //   prevUsers.map((user) =>
-        //     user.user.id === userId ? { ...user, isVerified: false } : user
-        //   )
-        // );
-        // console.log('User unverified:', response.data);
+          // Handle success
+          Swal.fire({
+            title: `Added a ${formValues.type === "true" ? "Event" : "Alert"}`,
+          });
     
-        //   // Show a success message
-        //   Swal.fire({
-        //     title: "Revoked user verification",
-        //     text: "This User is not verified",
-        //     icon: "success"
-        //   });
-        // }
+          console.log('Alert/Event added:', response.data);
         }
       } catch (error) {
-        console.error('Error verifying user:', error);
+        console.error(`Error adding an Alert/Event:`, error);
         // Show an error message
         Swal.fire({
           title: "Error!",
-          text: "Issue in revoking user verification",
+          text: `Error adding an Alert/Event`,
           icon: "error"
         });
       } finally {
@@ -131,18 +128,21 @@ const LeftSideNavbar = () => {
     return (
       <>
         <SideNavbar className="w-fitcontent">
-          <button onClick= {handleDashboard}>
+          <button onClick= {() => {navigate("/dashboard")}}>
             <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" active={isActive('/dashboard')} alert />
           </button>
           <SidebarItem icon={<MessageCircle size={20}/>} text="Chats" active={isActive('/users')} />
-          <button onClick= {handleViewUsers}>
-            <SidebarItem icon={<UserCircle size={20} />} text="Users" active={isActive('/view-users')} />
+          <button onClick= {() => {navigate("/view-users")}}>
+            <SidebarItem icon={<Users size={20} />} text="Users" active={isActive('/view-users')} />
           </button>
           <SidebarItem icon={<Boxes size={20} />} text="Groups" />
           <SidebarItem icon={<Package size={20} />} text="Orders" active={isActive('/users')} alert />
           <SidebarItem icon={<Receipt size={20} />} text="Billings" active={isActive('/users')} />
           <hr className="my-3"/>
-          <SidebarItem icon={<Settings size={20} />} text="Settings" active={isActive('/users')} />
+          <button onClick= {() => {navigate("/profile")}}>
+            <SidebarItem icon={<UserCircle size={20} />} text="Profile" active={isActive('/profile')} />
+          </button>
+
           {isAdmin ? 
             <button onClick={handleAddEvent}>
               <SidebarItem icon={<CircleFadingPlus size={20} />} text="Add Alert/Event" active={isActive('/users')} alert />

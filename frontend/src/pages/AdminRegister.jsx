@@ -4,8 +4,7 @@ import Nav from '../components/Nav'
 
 const AdminRegister = () => {
   return (
-    <div>
-      <Nav />
+    <div className="max-h-screen">
       <RegisterForm route="/api/admin/register/" method="register" checkAdmin="true" />
     </div>
   )
