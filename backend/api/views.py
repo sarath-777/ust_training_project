@@ -86,7 +86,7 @@ class EventView(APIView):
 
     def get(self,request,pk=None):
         if pk:
-            events=AlertEvent.objects.all(id=pk)
+            events=AlertEvent.objects.get(id=pk)
             serializer=AlertSerializer(events, partial=True)
             return Response(serializer.data)
         events=AlertEvent.objects.all()
