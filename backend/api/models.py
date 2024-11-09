@@ -57,7 +57,8 @@ class AlertEvent(models.Model):
     Date = models.DateField()
     Time = models.TimeField()
     Description = models.TextField(max_length=300)
-
+    Venue = models.TextField(max_length=100, blank=True, null=True)
+    Completed = models.BooleanField(default= False)
 
 
 #Models for Residence Groups and Membership 
