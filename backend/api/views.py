@@ -86,8 +86,13 @@ class EventView(APIView):
 
     def get(self,request,pk=None):
         if pk:
+<<<<<<< HEAD
             events=AlertEvent.objects.get(pk=pk)
             serializer=AlertSerializer(events, partial=True)
+=======
+            events=AlertEvent.objects.get(id=pk)
+            serializer=AlertSerializer(events,partial=True)
+>>>>>>> chat
             return Response(serializer.data)
         events=AlertEvent.objects.all()
         serializer=AlertSerializer(events,many=True)
@@ -103,7 +108,7 @@ class EventView(APIView):
 class EventoperView(APIView):
     permission_classes=[IsAuthenticated]
     def patch(self,request,pk):
-        event=AlertEvent.objects.get(pk=pk)
+        event=AlertEvent.objects.get(id=pk)
         serializer = AlertSerializer(event,data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -111,7 +116,7 @@ class EventoperView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self,request,pk):
-        event=AlertEvent.objects.get(pk=pk)
+        event=AlertEvent.objects.get(id=pk)
         event.delete()
         remevents=AlertEvent.objects.all()
         serializer=AlertSerializer(remevents,many=True)
