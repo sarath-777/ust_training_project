@@ -52,13 +52,16 @@ class Profile(models.Model):
 
 class AlertEvent(models.Model):
     Title = models.TextField(max_length=100)
-    Residence = models.TextField(max_length=100)
+    Residence = models.ForeignKey(Residence,on_delete=models.CASCADE)
+    #Residence = models.TextField(max_length=100)
     Event= models.BooleanField(default=True ,help_text="if unchecked means its an alert else its an event")
     Date = models.DateField()
     Time = models.TimeField()
     Description = models.TextField(max_length=300)
     Venue = models.TextField(max_length=100, blank=True, null=True)
     Completed = models.BooleanField(default= False)
+    
+
 
 
 #Models for Residence Groups and Membership 
