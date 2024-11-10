@@ -15,7 +15,7 @@ const Dashboard = () => {
     const [pincode,setPincode] = useState(adminData.Pincode)
     const [residenceName,setResidenceName] = useState(adminData.Adminresidence)
     const [residencePincode,setResidencePincode] = useState(adminData.Adminpincode)
-    const iframeRef = useRef(null);
+    const [news, setNews] = useState([]);
     const [expandedAlertId, setExpandedAlertId] = useState(null);
 
     const dispatch = useDispatch()
@@ -27,17 +27,28 @@ const Dashboard = () => {
         dispatch(setUser(JSON.parse(storedUser)))
     }
 
-    const iframe = iframeRef.current;
+    const fetchNews = async () => {
+      try {
+        const newsResponse = await fetch('https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=f405a28b8384471aae6b8f5914f749d3');
+        const newsData = await newsResponse.json();
+        if (newsData.status === 'ok') {
+          setNews(newsData.articles);
+          console.log(news,"neeeeeeeeews")
+        } else {
+          console.log("Error fetching news:", newsData.message);
+        }
+  
+        const alertEvents = await api.get('/api/events/');
+        setEvents(alertEvents.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+  
+    }
+    fetchNews()
     
-        iframe.onload = () => {
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-          // Scroll to a specific element in the iframe (example: id="target")
-          const targetElement = iframeDoc.getElementById('container-d99b7319ea');
-          if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth' });
-          }
-        };
-
     },[])
 
     useEffect(() => {
@@ -131,6 +142,7 @@ const Dashboard = () => {
             } finally {
                 setLoading(false)
             }
+
         }
         fetchData()
         
@@ -155,9 +167,10 @@ const Dashboard = () => {
       }
     };
 
-    const alerts = events.filter(event => event.Event === false && event.Residence === residenceName && !event.Completed);
+    const alerts = events.filter(event => event.Event === false && event.Residence === adminData.Pincode && !event.Completed);
+    console.log(events)
 
-    const normalEvents = events.filter(event => event.Event === true && event.Residence === residenceName && !event.Completed);
+    const normalEvents = events.filter(event => event.Event === true && event.Residence === adminData.Pincode && !event.Completed);
 
     const toggleAlertExpand = (alertId) => {
       setExpandedAlertId(expandedAlertId === alertId ? null : alertId);
@@ -280,7 +293,9 @@ const Dashboard = () => {
       }
     };
 
-
+    const handleNewsClick = (url) => {
+      window.open(url, '_blank');
+    };
 
   return (
     <div className="dashboard-container ">
@@ -350,7 +365,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Events and News Section */}
+      {/* Events Section */}
       <div className="flex gap-6 w-full">
       <div className="events-section flex-1 h-[400px] overflow-y-auto custom-scrollbar">
           <h3 className="text-lg font-semibold mb-2">Upcoming Events</h3>
@@ -408,32 +423,32 @@ const Dashboard = () => {
         </div>
 
         {/* News Section */}
-        <div className="news-section flex-1">
-          {/* <h3 className="text-lg font-semibold">NEWS</h3> */}
-          {/* {news.length > 0 ? (
-            <ul className="news-list">
-              {news.map((newsItem, index) => (
-                <li key={index} className="news-item bg-green-100 p-3 mb-2 rounded">
-                  {newsItem}
+        <div className="news-section h-[400px] flex-1 bg-gray-100 p-4 rounded-lg shadow-lg overflow-y-auto custom-scrollbar">
+          <h3 className="text-lg font-semibold mb-4">Latest News</h3>
+          <ul className="news-list space-y-4">
+            {news.length > 0 ? (
+              news.map((article, index) => (
+                <li
+                  key={index}
+                  className="news-item p-4 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-gray-200"
+                  onClick={() => handleNewsClick(article.url)}
+                >
+                  <div className="news-title text-xl font-semibold text-blue-900 mb-2">
+                    {article.title}
+                  </div>
+                  <div className="news-description text-sm text-gray-700 mb-2">
+                    {article.description}
+                  </div>
+                  <div className="text-sm text-gray-500">{new Date(article.publishedAt).toLocaleString()}</div>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-600">No current news.</p>
-          )} */} 
-          <div style={{ position: 'relative', width: '100%', height: '0', paddingBottom: '56.25%' }}>
-            <iframe
-              ref={iframeRef}
-              src="https://www.manoramaonline.com/district-news/thiruvananthapuram.html"
-              width="500"
-              height="400"
-              title="Example Iframe"
-              style={{ border: 'none' }}
-            ></iframe>
-          </div>
+              ))
+            ) : (
+              <p className="text-gray-600">No news available at the moment.</p>
+            )}
+          </ul>
         </div>
       </div>
-      </div>
+    </div>
   );
 }
 

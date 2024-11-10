@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import api from "../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_DATA } from "../constants";
 import LoadingIndicator from "./LoadingIndicator";
+import Logo from "../assets/HAVEN.png"
 
 function RegisterForm({ route, method, checkAdmin }) {
   const [username, setUsername] = useState("");
@@ -21,6 +22,9 @@ function RegisterForm({ route, method, checkAdmin }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   useEffect(() => {
     if (checkAdmin === "true") {
@@ -119,15 +123,30 @@ function RegisterForm({ route, method, checkAdmin }) {
   };
 
   return (
-    <div className="max-h-screen bg-gray-100 text-gray-900 flex justify-center items-center">
+    <div className="min-h-screen bg-gray-100 text-gray-900 flex justify-center items-center">
       <div className="h-full max-w-screen-xl sm:m-10 bg-white shadow-lg sm:rounded-lg flex justify-center flex-1">
         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
           <div className="text-center">
-            <img
-              src="https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png"
-              className="w-32 mx-auto"
-              alt="Logo"
-            />
+              <img
+                src={Logo}
+                className="w-40 mx-auto"
+                alt="Logo"
+              />
+              <br />
+            <div className="flex justify-center gap-[2vw]">
+              <button
+                className={`w-[10vw] py-2 rounded-lg font-semibold ${isActive('/user/register') ? 'bg-indigo-700' : 'bg-white border-indigo-500 border-2 text-indigo-700'} text-gray-100 hover:bg-indigo-700 transition-all duration-300 ease-in-out focus:outline-none focus:shadow-outline`}
+                onClick={() => navigate('/user/register')}
+              >
+                User
+              </button>
+              <button
+                className={`w-[10vw] py-3 rounded-lg font-semibold ${isActive('/admin/register') ? 'bg-indigo-700' : 'bg-white border-indigo-500 border-2 text-indigo-700'} text-gray-100 hover:bg-indigo-500 hover:text-white transition-all duration-300 ease-in-out focus:outline-none focus:shadow-outline`}
+                onClick={() => navigate('/admin/register')}
+              >
+                Admin
+              </button>
+            </div>
             <h1 className="text-2xl xl:text-3xl font-extrabold mt-6">
               {isAdmin ? "Admin" : "User"} Registration
             </h1>
@@ -270,6 +289,15 @@ function RegisterForm({ route, method, checkAdmin }) {
               >
                 Register
               </button>
+              <div className="flex justify-center gap-2">
+                <span>Already have an account? </span>
+                <button
+                  onClick={() => {navigate('/login')}}
+                  className="text-indigo-700"
+                >
+                  <b>Login</b>
+                </button>
+              </div>
             </form>
           </div>
         </div>

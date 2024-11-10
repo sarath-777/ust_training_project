@@ -1,7 +1,7 @@
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react"
 import { useContext, createContext, useState,useEffect } from "react"
 import { useLocation } from 'react-router-dom'
-import Logo from "../assets/complete_logo.png"
+import Logo from "../assets/logo_haven.png"
 import { useSelector,useDispatch } from "react-redux"
 import { USER_DATA } from "../constants"
 import { setUser } from "../state/UserActions"
@@ -31,7 +31,7 @@ export default function Sidebar({ children }) {
           <img
             src={Logo}
             className={`overflow-hidden transition-all ${
-              expanded ? "w-32" : "w-0"
+              expanded ? "h-12 w-auto" : "w-0"
             }`}
             alt=""
           />

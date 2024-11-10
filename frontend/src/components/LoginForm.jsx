@@ -3,6 +3,7 @@ import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_DATA } from "../constants";
 import "../styles/Form.css";
+import Logo from "../assets/HAVEN.png"
 // Redux Part
 import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../state/UserActions";
@@ -58,8 +59,8 @@ function LoginForm({ route, method }) {
         <div className="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
           <div className="text-center">
             <img
-              src="https://storage.googleapis.com/devitary-image-host.appspot.com/15846435184459982716-LogoMakr_7POjrN.png"
-              className="w-32 mx-auto"
+              src={Logo}
+              className="w-40 mx-auto"
               alt="Logo"
             />
             <h1 className="text-2xl xl:text-3xl font-extrabold mt-6">
@@ -101,6 +102,15 @@ function LoginForm({ route, method }) {
               >
                 Login
               </button>
+              <div className="flex justify-center gap-2">
+                <span>New here? </span>
+                <button
+                  onClick={() => {navigate('/user/register')}}
+                  className="text-indigo-700"
+                >
+                  <b>Register</b>
+                </button>
+              </div>
             </form>
           </div>
         </div>

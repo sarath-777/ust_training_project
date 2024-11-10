@@ -20,6 +20,7 @@ import {
 
 
 const LeftSideNavbar = () => {
+    const adminData = useSelector((state) => state.user_data.user)
     const location = useLocation()
     const isActive = (path) => location.pathname === path
     const isAdmin = useSelector(state=>state.user_data.user.isAdmin)
@@ -37,12 +38,10 @@ const LeftSideNavbar = () => {
     const handleAddEvent = async () => {
       try {
         // Open the SweetAlert2 dialog
+        console.log(adminData)
         const { value: formValues } = await Swal.fire({
           title: "Add Alerts/Events",
           html: `
-            <div>
-              <input type="text" id="event-residence" value="${residenceName}" disabled>
-            </div>
             <input id="event-title" type="text" class="swal2-input" placeholder="Title of Alert/Event" required>
             <br/><br/>
             <!-- Radio input for selecting Alert or Event -->
@@ -79,12 +78,13 @@ const LeftSideNavbar = () => {
             const date = document.getElementById("event-date").value;
             const time = document.getElementById("event-time").value;
             const venue = document.getElementById("event-venue").value;
+            const residence = adminData.Pincode
             
             // Get the selected radio option (either "Alert" or "Event")
             const type = document.querySelector('input[name="type"]:checked') ? document.querySelector('input[name="type"]:checked').value : null;
     
             // Return the form values
-            return { title, description, date, time, venue, type, residenceName };
+            return { title, description, date, time, venue, type, residence };
           }
         });
     
@@ -95,7 +95,7 @@ const LeftSideNavbar = () => {
           // API call to create event/alert
           const response = await api.post(`/api/events/`, { 
             Title: formValues.title,
-            Residence: formValues.residenceName,
+            Residence: formValues.residence,
             Event: formValues.type,
             Date: formValues.date,
             Time: formValues.time,
@@ -131,13 +131,18 @@ const LeftSideNavbar = () => {
           <button onClick= {() => {navigate("/dashboard")}}>
             <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" active={isActive('/dashboard')} alert />
           </button>
-          <SidebarItem icon={<MessageCircle size={20}/>} text="Chats" active={isActive('/users')} />
+          <button>
+            <SidebarItem icon={<MessageCircle size={20}/>} text="Chats" active={isActive('/users')} />
+          </button>
           <button onClick= {() => {navigate("/view-users")}}>
             <SidebarItem icon={<Users size={20} />} text="Users" active={isActive('/view-users')} />
           </button>
-          <SidebarItem icon={<Boxes size={20} />} text="Groups" />
-          <SidebarItem icon={<Package size={20} />} text="Orders" active={isActive('/users')} alert />
-          <SidebarItem icon={<Receipt size={20} />} text="Billings" active={isActive('/users')} />
+          <button>
+            <SidebarItem icon={<Boxes size={20} />} text="Groups" />
+          </button>
+          <button>
+            <SidebarItem icon={<Receipt size={20} />} text="Billings" active={isActive('/users')} />
+          </button>
           <hr className="my-3"/>
           <button onClick= {() => {navigate("/profile")}}>
             <SidebarItem icon={<UserCircle size={20} />} text="Profile" active={isActive('/profile')} />
