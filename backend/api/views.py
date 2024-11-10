@@ -156,8 +156,12 @@ class EventoperView(APIView):
 
 #This is a custome view to implement the customisation
 #of the token obtain pair view usingg the serializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
+
+@method_decorator(ratelimit(key='user_or_ip', rate='6/m', method='POST', block=True), name='dispatch')
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
