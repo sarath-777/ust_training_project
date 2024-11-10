@@ -21,6 +21,13 @@ ResidenceSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Profile, AlertEvent, Residence
 
+from twilio.rest import Client
+
+# Twilio credentials
+TWILIO_ACCOUNT_SID ='AC05350cafb0044d278748111b8640116f' #'your_twilio_account_sid'
+TWILIO_AUTH_TOKEN = '35ec68ac25a822fb2e60f3bfc52d2070'#'your_twilio_auth_token'
+TWILIO_WHATSAPP_NUMBER = 'whatsapp:+14155238886'  # This is Twilio's sandbox number
+
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
@@ -96,6 +103,29 @@ class EventView(APIView):
         serializer = AlertSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            
+            print ("printing ...:",serializer.data['Residence'])
+            residence_id = serializer.data['Residence']
+            message_text = serializer.data['Description']
+            title = serializer.data['Title']
+            client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+
+            phone_numbers= Profile.objects.filter(Pincode_id=residence_id).values_list('phonenumber',flat=True)
+            for number in phone_numbers:
+                print("number of each person with that id is :",number)
+                try:
+                    message_to_sent = str(title) + " : " + str(message_text)
+                    to_the_number= 'whatsapp:+91'+str(number)
+                    print("the phone number in try block is :  ",to_the_number,"and the type is : ",type(to_the_number))
+                    message = client.messages.create(
+                        body = message_to_sent ,
+                        from_ = TWILIO_WHATSAPP_NUMBER,
+                        to = to_the_number
+
+                    )
+                    print("Message sent:....", message)
+                except Exception as e :
+                    print("failed to sent message .......")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -121,8 +151,12 @@ class EventoperView(APIView):
 
 #This is a custome view to implement the customisation
 #of the token obtain pair view usingg the serializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
+
+@method_decorator(ratelimit(key='user_or_ip', rate='6/m', method='POST', block=True), name='dispatch')
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
