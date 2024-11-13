@@ -104,7 +104,7 @@ function RegisterForm({ route, method, checkAdmin }) {
         navigate("/login");
       }
     } catch (error) {
-      alert(error);
+      alert("Check the credentials you entered.");
     } finally {
       setLoading(false);
     }

@@ -47,7 +47,22 @@ function LoginForm({ route, method }) {
         navigate("/login");
       }
     } catch (error) {
-      alert(error);
+      console.log("hiiiii")
+      if (error.response) {
+        // Handle the error based on status code or error message in the response
+        if (error.response.status === 400) {
+          // Check if the error response contains a message
+          const errorMessage = error.response.data?.detail || "Check your credentials or contact your Admin.";
+          alert(errorMessage);
+        } else {
+          // For other types of errors, show a more general message
+          alert("An unexpected error occurred. Please try again later.");
+        }
+      } else {
+        // This could be a network issue or no response from the server
+        console.error("Network Error or No Response:", error);
+        alert("An unexpected error occurred. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }

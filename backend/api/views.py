@@ -156,7 +156,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 
-@method_decorator(ratelimit(key='user_or_ip', rate='6/m', method='POST', block=True), name='dispatch')
+@method_decorator(ratelimit(key='user_or_ip', rate='3/m', method='POST', block=True), name='dispatch')
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 

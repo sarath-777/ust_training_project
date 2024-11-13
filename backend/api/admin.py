@@ -6,3 +6,4 @@ from api.models import *
 admin.site.register(ResidenceGroup)
 admin.site.register(Profile)
 admin.site.register(AlertEvent)
+admin.site.register(Residence)
